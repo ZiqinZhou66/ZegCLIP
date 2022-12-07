@@ -1,5 +1,6 @@
 # ZegCLIP
 Official implement of ZegCLIP: Towards Adapting CLIP for Zero-shot Semantic Segmentation
+
 arxiv：
 
 ## Environment:
@@ -17,6 +18,7 @@ docker push ziqinzhou/zegclip:latest
 1. PASCAL VOC 2012
 2. COCO Stuff 164K
 3. PASCAL Context
+
 According to MMseg: https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md
 
 ## Preparing Pretrained CLIP model:
