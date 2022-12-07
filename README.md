@@ -50,6 +50,7 @@ https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d
 | Fully                |        |           |           |       |       |           |           |       |        |           |           |       |
 | ZegCLIP \(Ours\)     | 96\.3  | 92\.4     | 90\.9     | 91\.6 | 69\.9 | 40\.7     | 63\.2     | 49\.6 | 77\.5  | 46\.5     | 78\.7     | 56\.9 |
 
+## Citation:
 
 ## Code:
 Coming soon~
