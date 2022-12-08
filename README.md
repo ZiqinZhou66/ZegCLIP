@@ -1,7 +1,8 @@
 # ZegCLIP
 Official implementation of ZegCLIP: Towards Adapting CLIP for Zero-shot Semantic Segmentation
 
-arxiv：
+paper：http://arxiv.org/abs/2212.03588
+
 
 ## Environment:
 -Install pytorch
