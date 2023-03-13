@@ -40,11 +40,17 @@ CUDA_VISIBLE_DEVICES="0" python test.py ./configs/cross_dataset/coco-to-context.
 ## Related Assets \& Acknowledgement
 
 Our work is closely related to the following assets that inspire our implementation. We gratefully thank the authors. 
+
 CLIP:  https://github.com/openai/CLIP
+
 Maskformer: https://bowenc0221.github.io/maskformer
+
 Zegformer: https://github.com/dingjiansw101/ZegFormer
+
 zsseg: https://github.com/MendelXu/zsseg.baseline
+
 MaskCLIP: https://github.com/chongzhou96/MaskCLIP
+
 SegViT: https://github.com/zbwxp/SegVit
 
 ## Citation:
