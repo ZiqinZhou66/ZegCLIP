@@ -1,5 +1,6 @@
 # ZegCLIP:
 This is the official implementation of "ZegCLIP: Towards Adapting CLIP for Zero-shot Semantic Segmentation"
+
 Paper address: arXiv preprint arXiv:2212.03588
 
 ## Environment:
