@@ -59,6 +59,10 @@ Our work is closely related to the following assets that inspire our implementat
  - zsseg: https://github.com/MendelXu/zsseg.baseline
  - MaskCLIP: https://github.com/chongzhou96/MaskCLIP
  - SegViT: https://github.com/zbwxp/SegVit
+ - 
+## Preparing Dataset:
+
+Coming soon :)
 
 ## Citation:
 If you find this project useful, please consider citing:
