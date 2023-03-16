@@ -60,7 +60,7 @@ Our work is closely related to the following assets that inspire our implementat
  - MaskCLIP: https://github.com/chongzhou96/MaskCLIP
  - SegViT: https://github.com/zbwxp/SegVit
  - 
-## Preparing Dataset:
+## Pretrained checkpoint:
 
 Coming soon :)
 
