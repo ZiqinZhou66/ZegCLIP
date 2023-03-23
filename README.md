@@ -59,7 +59,8 @@ Our work is closely related to the following assets that inspire our implementat
  - zsseg: https://github.com/MendelXu/zsseg.baseline
  - MaskCLIP: https://github.com/chongzhou96/MaskCLIP
  - SegViT: https://github.com/zbwxp/SegVit
- - 
+ - Visual Prompt Tuning: https://github.com/KMnP/vpt
+ 
 ## Pretrained checkpoint:
 
 Coming soon :)
