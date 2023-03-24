@@ -59,7 +59,7 @@ model = dict(
         embed_dims=in_channels,
         loss_decode=dict(
             type='SegLossPlus', num_classes=num_classes, dec_layers=3, 
-            mask_weight=20.0, #100.0
+            mask_weight=100.0, #20.0
             dice_weight=1.0,
             loss_weight=1.0),
     ),
