@@ -70,7 +70,7 @@ If you find this project useful, please consider citing:
 ```
 @article{zhou2022zegclip,
   title={ZegCLIP: Towards adapting CLIP for zero-shot semantic segmentation},
-  author={Zhou, Ziqin and Zhang, Bowen and Lei, Yinjie and Liu, Lingqiao and Liu, Yifan},
+  author={Zhou, Ziqin and Lei, Yinjie and Zhang, Bowen and Liu, Lingqiao and Liu, Yifan},
   journal={arXiv preprint arXiv:2212.03588},
   year={2022}
 }
