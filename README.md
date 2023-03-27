@@ -2,7 +2,7 @@
 
 Authors: Ziqin Zhou, Yinjie Lei, Bowen Zhang, Lingqiao Liu*, Yifan Liu.     *Corresponding author
 
-[[paper](https://arxiv.org/abs/2212.03588)] [[github](https://github.com/ZiqinZhou66/ZegCLIP)] [[docker image](https://hub.docker.com/repository/docker/ziqinzhou/zegclip/general)] [[pretrained models]()] [[visualization](https://github.com/ZiqinZhou66/ZegCLIP/figs/vis.png)]  [[visualization of class queries](https://github.com/ZiqinZhou66/ZegCLIP/figs/vis-attn.png)]
+[[paper](https://arxiv.org/abs/2212.03588)] [[github](https://github.com/ZiqinZhou66/ZegCLIP)] [[docker image](https://hub.docker.com/repository/docker/ziqinzhou/zegclip/general)] [[pretrained models]()] [[visualization](https://github.com/ZiqinZhou66/ZegCLIP/blob/main/figs/vis-attn.jpg)]  [[visualization of class queries](https://github.com/ZiqinZhou66/ZegCLIP/blob/main/figs/vis-attn.jpg)]
 
 ---
 
