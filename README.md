@@ -2,7 +2,7 @@
 
 Authors: Ziqin Zhou, Yinjie Lei, Bowen Zhang, Lingqiao Liu*, Yifan Liu.     *Corresponding author
 
-[[paper](https://arxiv.org/abs/2212.03588)] [[github](https://github.com/ZiqinZhou66/ZegCLIP)] [[pretrained models]()] [[Docker Image](https://hub.docker.com/repository/docker/ziqinzhou/zegclip/general)]
+[[paper](https://arxiv.org/abs/2212.03588)] [[github](https://github.com/ZiqinZhou66/ZegCLIP)] [[docker image](https://hub.docker.com/repository/docker/ziqinzhou/zegclip/general)] [[pretrained models]()] [[visualization](https://github.com/ZiqinZhou66/ZegCLIP/figs/vis.png)]  [[visualization of class queries](https://github.com/ZiqinZhou66/ZegCLIP/figs/vis-attn.png)]
 
 ---
 
@@ -50,9 +50,6 @@ https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d
 | COCO Stuff 164K | Transductive |  69.2 |   40.7  |   59.9  | 48.5 | [Google Drive](Coming soon) |
 | COCO Stuff 164K |    Fully     |  69.9 |   40.7  |   63.2  | 49.6 | [Google Drive](Coming soon) |
 
-<p align="left">
-<img width="800" src="figs/vis.png">
-</p>
 
 ## Training (Inductive):
 
