@@ -154,20 +154,17 @@ class ResidualAttentionBlock(nn.Module):
         self.ln_2 = LayerNorm(d_model)
         self.attn_mask = attn_mask
 
-        self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity() # ????
+        self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
 
     def attention(self, x: torch.Tensor):
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
         return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask)[0]
     
-    def attention_weight(self, x: torch.Tensor): # ADDED
+    def attention_weight(self, x: torch.Tensor):
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
         return self.attn(x, x, x, need_weights=True, attn_mask=self.attn_mask)[1]
 
-    def forward(self, x: torch.Tensor, return_attention: bool=False): # MODIFIED
-        # if return_attention: # ADDED
-        #     return self.attention_weight(self.ln_1(x)) # ADDED
-
+    def forward(self, x: torch.Tensor, return_attention: bool=False):
         x = x + self.attention(self.ln_1(x))
         x = x + self.mlp(self.ln_2(x))
         return x
