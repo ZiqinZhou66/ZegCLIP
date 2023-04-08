@@ -50,6 +50,7 @@ https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d
 | COCO Stuff 164K | Transductive |  69.2 |   40.7  |   59.9  | 48.5 | [[Google Drive](https://drive.google.com/file/d/1S8ia0-0oAUELxQXWqz0OlKoEv68gUuMp/view?usp=sharing)]|
 | COCO Stuff 164K |    Fully     |  69.9 |   40.7  |   63.2  | 49.6 | [[Google Drive](https://drive.google.com/file/d/1DvUpYZa0rtPUBOjsYWwt-TEs6YdvUG0C/view?usp=share_link)] |
 
+Note that here we report the averaged results of several training models and only provide one of them.
 
 ## Training (Inductive):
 
