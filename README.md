@@ -45,7 +45,7 @@ https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d
 | :-------------: | :---------:  | :---: | :-----: | :-----: | :--: |  :----------------------------------------------------------: |
 | PASCAL VOC 2012 |  Inductive   |  94.6 |   91.9  |   77.8  | 84.3 | [[Google Drive](https://drive.google.com/file/d/1MqIFntWtTQk3HPiZp8hysI7CQIDTXteS/view?usp=share_link)] |
 | PASCAL VOC 2012 | Transductive |  96.2 |   92.3  |   89.9  | 91.1 | [[Google Drive](https://drive.google.com/file/d/1PsXOd_A9Pww3ftclTDVWKcAvNIOAn6E-/view?usp=share_link)] |
-| PASCAL VOC 2012 |    Fully     |  96.3 |   92.4  |   90.9  | 91.6 | [Google Drive](Coming soon) |
+| PASCAL VOC 2012 |    Fully     |  96.3 |   92.4  |   90.9  | 91.6 | [Google Drive] |
 | COCO Stuff 164K |  Inductive   |  62.0 |   40.2  |   41.1  | 40.8 | [[Google Drive](https://drive.google.com/file/d/12M6T97o9wyxbJKrR7zLfFMDsGVTiq4WY/view?usp=share_link)]|
 | COCO Stuff 164K | Transductive |  69.2 |   40.7  |   59.9  | 48.5 | [[Google Drive](https://drive.google.com/file/d/1S8ia0-0oAUELxQXWqz0OlKoEv68gUuMp/view?usp=sharing)]|
 | COCO Stuff 164K |    Fully     |  69.9 |   40.7  |   63.2  | 49.6 | [[Google Drive](https://drive.google.com/file/d/1DvUpYZa0rtPUBOjsYWwt-TEs6YdvUG0C/view?usp=share_link)] |
