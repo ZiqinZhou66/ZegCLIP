@@ -62,13 +62,13 @@ Note that here we report the averaged results of several training models and onl
 ## Training (Transductive):
  ```shell
  bash dist_train.sh ./configs/coco/vpt_seg_zero_vit-b_512x512_40k_12_100_multi_st.py Path/to/coco/zero_12_100_st --load-from=Path/to/coco/zero_12_100/iter_40000.pth
- bash dist_train.sh ./configs/voc12/vpt_seg_zero_vit-b_512x512_10k_12_10_multi_st.py Path/to/voc12/zero_12_10_st --load-from=Path/to/voc12/zero_12_10/iter_10000.pth
+ bash dist_train.sh ./configs/voc12/vpt_seg_zero_vit-b_512x512_10k_12_10_st.py Path/to/voc12/zero_12_10_st --load-from=Path/to/voc12/zero_12_10/iter_10000.pth
  ```
 
 ## Training (Fully supervised):
  ```shell
  bash dist_train.sh configs/coco/vpt_seg_fully_vit-b_512x512_80k_12_100_multi.py Path/to/coco/fully_12_100
- bash dist_train.sh configs/voc12/vpt_seg_fully_vit-b_512x512_20k_12_10_multi.py Path/to/voc12/fully_12_10
+ bash dist_train.sh configs/voc12/vpt_seg_fully_vit-b_512x512_20k_12_10.py Path/to/voc12/fully_12_10
  ```
 
 ## Inference:
