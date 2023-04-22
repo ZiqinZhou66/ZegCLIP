@@ -52,6 +52,14 @@ https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d
 
 Note that here we report the averaged results of several training models and provide one of them.
 
+## Efficiency results:
+|     Dataset     |  #Params(M) |  Flops(G)  |     FPS    |
+| :-------------: | :---------: | :--------: | :--------: |
+| PASCAL VOC 2012 |    13.8     |    110.4   |     9.0    |
+| COCO Stuff 164K |    14.6     |    123.9   |     6.7    |
+
+Note that all experience are conducted on a single 1080Ti GPU and #Params(M) represents the number of learnable parameters.
+
 ## Training (Inductive):
 
  ```shell
