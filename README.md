@@ -23,7 +23,10 @@ Option 1:
 
 - Install the mmsegmentation library and some required packages.
 
- `pip install mmcv-full==1.4.4 mmsegmentation==0.24.0`
+ `pip install mmcv-full==1.4.4 -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.10.0/index.html` 
+ 
+ `pip install mmsegmentation==0.24.0`
+ 
  `pip install scipy timm==0.3.2`
 
 Option 2:
