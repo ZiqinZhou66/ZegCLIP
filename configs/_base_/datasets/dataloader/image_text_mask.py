@@ -1,86 +1,150 @@
+import json
 import os.path as osp
+import random
+from pathlib import Path
+from typing import Any, Dict, List, Literal, Optional, OrderedDict, Union, get_args
 
-from mmseg.datasets.builder import DATASETS
-from mmseg.datasets.custom import CustomDataset
-import os.path as osp
-import warnings
-from collections import OrderedDict
-
+import albumentations as A
+import clip
+import cv2
 import mmcv
 import numpy as np
+import torch
+from albumentations.pytorch import ToTensorV2
 from mmcv.utils import print_log
-from prettytable import PrettyTable
-from torch.utils.data import Dataset
-
-from mmseg.core import eval_metrics, intersect_and_union, pre_eval_to_metrics
 from mmseg.utils import get_root_logger
+from mmseg.core import eval_metrics, intersect_and_union, pre_eval_to_metrics
 from mmseg.datasets.builder import DATASETS
-from mmseg.datasets.pipelines import Compose, LoadAnnotations
-from PIL import Image
+from mmseg.datasets.custom import CustomDataset
+from prettytable import PrettyTable
+from mmseg.datasets.pipelines import Compose
+from .custom_pipeline import CustomLoadAnnotations
+
+
+PROMPT_TYPE = Literal["p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"]
 
 
 @DATASETS.register_module()
-class ZeroPascalVOCDataset20(CustomDataset):
-    """Pascal VOC dataset.
-    Args:
-        split (str): Split txt file for Pascal VOC and exclude "background" class.
+class ImageTextMaskDataset(CustomDataset):
     """
-
-    CLASSES = (
-        "aeroplane",
-        "bicycle",
-        "bird",
-        "boat",
-        "bottle",
-        "bus",
-        "car",
-        "cat",
-        "chair",
-        "cow",
-        "diningtable",
-        "dog",
-        "horse",
-        "motorbike",
-        "person",
-        "pottedplant",
-        "sheep",
-        "sofa",
-        "train",
-        "tvmonitor",
-    )
+    Image-Text-Mask Dataset
+    Args:
+        prompt_types (PROMPT_TYPE): prompt type to use
+        images_dir (Path): Path to images directory
+        masks_dir (Path): Path to masks directory
+        prompt_file (Optional[Path], optional): Path to captions file. Defaults to None.
+        img_size (int, optional): Size of image. Defaults to 224.
+    """
 
     PALETTE = [
         [128, 0, 0],
-        [0, 128, 0],
-        [128, 128, 0],
-        [0, 0, 128],
-        [128, 0, 128],
-        [0, 128, 128],
-        [128, 128, 128],
-        [64, 0, 0],
-        [192, 0, 0],
-        [64, 128, 0],
-        [192, 128, 0],
-        [64, 0, 128],
-        [192, 0, 128],
-        [64, 128, 128],
-        [192, 128, 128],
-        [0, 64, 0],
-        [128, 64, 0],
-        [0, 192, 0],
-        [128, 192, 0],
-        [0, 64, 128],
     ]
 
-    def __init__(self, split, **kwargs):
-        super(ZeroPascalVOCDataset20, self).__init__(
-            img_suffix=".jpg",
-            seg_map_suffix=".png",
-            split=split,
-            reduce_zero_label=True,
-            **kwargs
+    CLASSES = (
+        "background",
+        "polyp",
+    )
+
+    def __init__(
+        self,
+        prompt_type: PROMPT_TYPE,
+        class_names: List[str],
+        img_dir: Path,
+        ann_dir: Path,
+        pipeline,
+        prompt_file: Optional[Path] = None,
+        img_suffix=".jpg",
+        seg_map_suffix=".png",
+        split=None,
+        data_root=None,
+        test_mode=False,
+        ignore_index=255,
+        reduce_zero_label=False,
+        classes=None,
+        palette=None,
+        gt_seg_map_loader_cfg=None,
+        file_client_args=dict(backend="disk"),
+        **kwargs,
+    ) -> None:
+        self.prompt_type = prompt_type
+
+        self.CLASSES = class_names
+
+        self.pipeline = Compose(pipeline)
+        self.img_dir = img_dir
+        self.img_suffix = img_suffix
+        self.ann_dir = ann_dir
+        self.seg_map_suffix = seg_map_suffix
+        self.split = split
+        self.data_root = data_root
+        self.test_mode = test_mode
+        self.ignore_index = ignore_index
+        self.reduce_zero_label = reduce_zero_label
+        self.label_map = None
+        self.CLASSES, self.PALETTE = self.get_classes_and_palette(classes, palette)
+        self.gt_seg_map_loader = (
+            CustomLoadAnnotations()
+            if gt_seg_map_loader_cfg is None
+            else CustomLoadAnnotations(**gt_seg_map_loader_cfg)
         )
-        assert osp.exists(self.img_dir) and self.split is not None
+
+        self.file_client_args = file_client_args
+        self.file_client = mmcv.FileClient.infer_client(self.file_client_args)
+
+        if test_mode:
+            assert (
+                self.CLASSES is not None
+            ), "`cls.CLASSES` or `classes` should be specified when testing"
+
+        # join paths if data_root is specified
+        if self.data_root is not None:
+            if not osp.isabs(self.img_dir):
+                self.img_dir = osp.join(self.data_root, self.img_dir)
+            if not (self.ann_dir is None or osp.isabs(self.ann_dir)):
+                self.ann_dir = osp.join(self.data_root, self.ann_dir)
+            if not (self.split is None or osp.isabs(self.split)):
+                self.split = osp.join(self.data_root, self.split)
+
+        self.img_infos = self.load_annotations(
+            self.img_dir,
+            self.ann_dir,
+            prompt_file,
+            prompt_type,
+        )
+
+    def load_annotations(
+        self, img_dir: Path, ann_dir: Path, prompt_file: Path, prompt_type: PROMPT_TYPE
+    ):
+        """Load annotation from directory.
+
+        Args:
+            img_dir (Path): Path to image directory
+            ann_dir (Path): Path to annotation directory.
+            prompt_file (Path): Path to prompt file.
+            prompt_type (PROMPT_TYPE): Prompt type to use.
+        Returns:
+            list[dict]: All image info of dataset, along with captions and prompts.
+        """
+
+        img_infos = []
+        with open(prompt_file, "r") as fp:
+            imgs_captions = json.load(fp)
+
+        for img in imgs_captions:
+            prompt = img["prompts"][prompt_type]
+            if type(prompt) == list:
+                prompt = random.choice(prompt)
+            img_info = dict(
+                filename=img_dir + img["img_name"],
+                ann=dict(seg_map=ann_dir + img["mask_name"]),
+                prompt=prompt,
+            )
+            img_infos.append(img_info)
+
+            img_infos = sorted(img_infos, key=lambda x: x["filename"])
+
+        print_log(f"Loaded {len(img_infos)} images", logger=get_root_logger())
+        return img_infos
 
     def evaluate(
         self,
@@ -90,7 +154,7 @@ class ZeroPascalVOCDataset20(CustomDataset):
         metric="mIoU",
         logger=None,
         gt_seg_maps=None,
-        **kwargs
+        **kwargs,
     ):
         """Evaluate the dataset.
 
@@ -108,6 +172,7 @@ class ZeroPascalVOCDataset20(CustomDataset):
         Returns:
             dict[str, float]: Default metrics.
         """
+        print(len(results), results[0].shape)
         if isinstance(metric, str):
             metric = [metric]
         allowed_metrics = ["mIoU", "mDice", "mFscore"]
@@ -120,6 +185,7 @@ class ZeroPascalVOCDataset20(CustomDataset):
             if gt_seg_maps is None:
                 gt_seg_maps = self.get_gt_seg_maps()
             num_classes = len(self.CLASSES)
+            gt_seg_maps = list(gt_seg_maps)  # NOTE: TESTING TO CHANGE GENERATOR TO LIST
             ret_metrics = eval_metrics(
                 results,
                 gt_seg_maps,
@@ -151,13 +217,25 @@ class ZeroPascalVOCDataset20(CustomDataset):
 
         # divide ret_metrics into seen and unseen part
         seen_ret_metrics = ret_metrics.copy()
-        seen_ret_metrics["IoU"] = seen_ret_metrics["IoU"][seen_idx]
+
+        if "mIoU" in metric:
+            seen_ret_metrics["IoU"] = seen_ret_metrics["IoU"][seen_idx]
+        if "mDice" in metric:
+            seen_ret_metrics["Dice"] = seen_ret_metrics["Dice"][seen_idx]
+
         seen_ret_metrics["Acc"] = seen_ret_metrics["Acc"][seen_idx]
+
         unseen_ret_metrics = ret_metrics.copy()
-        unseen_ret_metrics["IoU"] = unseen_ret_metrics["IoU"][unseen_idx]
+
+        if "mIoU" in metric:
+            unseen_ret_metrics["IoU"] = unseen_ret_metrics["IoU"][unseen_idx]
+        if "mDice" in metric:
+            unseen_ret_metrics["Dice"] = unseen_ret_metrics["Dice"][unseen_idx]
+
         unseen_ret_metrics["Acc"] = unseen_ret_metrics["Acc"][unseen_idx]
 
         # summary table
+
         ret_metrics_summary = OrderedDict(
             {
                 ret_metric: np.round(np.nanmean(ret_metric_value) * 100, 2)
@@ -227,6 +305,7 @@ class ZeroPascalVOCDataset20(CustomDataset):
         print_log(summary_table_data.get_string(), logger=logger)
 
         print("\n" + "+++++++++++ Seen classes +++++++++++++")
+
         seen_class_table_data = PrettyTable()
         for key, val in seen_ret_metrics_class.items():
             seen_class_table_data.add_column(key, val)
@@ -272,4 +351,4 @@ class ZeroPascalVOCDataset20(CustomDataset):
                 }
             )
 
-        return eval_results
+        return eval_results, gt_seg_maps

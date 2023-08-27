@@ -1,5 +1,5 @@
 _base_ = [
-    '../_base_/models/zegclip.py', '../_base_/datasets/voc12_20_aug_512x512.py',
+    '../_base_/models/zegclip.py', '../_base_/datasets/chexlocalize_512x512.py',
     '../_base_/default_runtime.py', '../_base_/schedules/schedule_20k.py'
 ]
 
@@ -7,7 +7,7 @@ img_size = 512
 in_channels = 512
 out_indices = [11]
 
-base_class = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+base_class = [0, 1]
 novel_class = []
 both_class = base_class
 num_classes = len(base_class)

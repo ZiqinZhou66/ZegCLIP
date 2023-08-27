@@ -8,3 +8,8 @@ from models.losses.atm_loss import SegLossPlus
 
 from configs._base_.datasets.dataloader.voc12 import ZeroPascalVOCDataset20
 from configs._base_.datasets.dataloader.coco_stuff import ZeroCOCOStuffDataset
+from configs._base_.datasets.dataloader.image_text_mask import ImageTextMaskDataset
+from configs._base_.datasets.dataloader.custom_pipeline import (
+    CustomCollect,
+    CustomLoadAnnotations,
+)

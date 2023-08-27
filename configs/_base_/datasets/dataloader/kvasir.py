@@ -20,67 +20,19 @@ from PIL import Image
 
 
 @DATASETS.register_module()
-class ZeroPascalVOCDataset20(CustomDataset):
-    """Pascal VOC dataset.
-    Args:
-        split (str): Split txt file for Pascal VOC and exclude "background" class.
-    """
+class KvasirDataset(CustomDataset):
+    """Kvasir dataset."""
 
-    CLASSES = (
-        "aeroplane",
-        "bicycle",
-        "bird",
-        "boat",
-        "bottle",
-        "bus",
-        "car",
-        "cat",
-        "chair",
-        "cow",
-        "diningtable",
-        "dog",
-        "horse",
-        "motorbike",
-        "person",
-        "pottedplant",
-        "sheep",
-        "sofa",
-        "train",
-        "tvmonitor",
-    )
+    CLASSES = ("polyp",)
 
     PALETTE = [
         [128, 0, 0],
-        [0, 128, 0],
-        [128, 128, 0],
-        [0, 0, 128],
-        [128, 0, 128],
-        [0, 128, 128],
-        [128, 128, 128],
-        [64, 0, 0],
-        [192, 0, 0],
-        [64, 128, 0],
-        [192, 128, 0],
-        [64, 0, 128],
-        [192, 0, 128],
-        [64, 128, 128],
-        [192, 128, 128],
-        [0, 64, 0],
-        [128, 64, 0],
-        [0, 192, 0],
-        [128, 192, 0],
-        [0, 64, 128],
     ]
 
-    def __init__(self, split, **kwargs):
-        super(ZeroPascalVOCDataset20, self).__init__(
-            img_suffix=".jpg",
-            seg_map_suffix=".png",
-            split=split,
-            reduce_zero_label=True,
-            **kwargs
+    def __init__(self, **kwargs):
+        super(KvasirDataset, self).__init__(
+            img_suffix=".jpg", seg_map_suffix=".png", reduce_zero_label=True, **kwargs
         )
-        assert osp.exists(self.img_dir) and self.split is not None
 
     def evaluate(
         self,
@@ -151,13 +103,25 @@ class ZeroPascalVOCDataset20(CustomDataset):
 
         # divide ret_metrics into seen and unseen part
         seen_ret_metrics = ret_metrics.copy()
-        seen_ret_metrics["IoU"] = seen_ret_metrics["IoU"][seen_idx]
+
+        if "mIoU" in metric:
+            seen_ret_metrics["IoU"] = seen_ret_metrics["IoU"][seen_idx]
+        if "mDice" in metric:
+            seen_ret_metrics["Dice"] = seen_ret_metrics["Dice"][seen_idx]
+
         seen_ret_metrics["Acc"] = seen_ret_metrics["Acc"][seen_idx]
+
         unseen_ret_metrics = ret_metrics.copy()
-        unseen_ret_metrics["IoU"] = unseen_ret_metrics["IoU"][unseen_idx]
+
+        if "mIoU" in metric:
+            unseen_ret_metrics["IoU"] = unseen_ret_metrics["IoU"][unseen_idx]
+        if "mDice" in metric:
+            unseen_ret_metrics["Dice"] = unseen_ret_metrics["Dice"][unseen_idx]
+
         unseen_ret_metrics["Acc"] = unseen_ret_metrics["Acc"][unseen_idx]
 
         # summary table
+
         ret_metrics_summary = OrderedDict(
             {
                 ret_metric: np.round(np.nanmean(ret_metric_value) * 100, 2)
@@ -227,6 +191,7 @@ class ZeroPascalVOCDataset20(CustomDataset):
         print_log(summary_table_data.get_string(), logger=logger)
 
         print("\n" + "+++++++++++ Seen classes +++++++++++++")
+
         seen_class_table_data = PrettyTable()
         for key, val in seen_ret_metrics_class.items():
             seen_class_table_data.add_column(key, val)

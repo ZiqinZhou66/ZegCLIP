@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name":"Debug Model Test",
+            "type":"python",
+            "request":"launch",
+            "program":"test.py",
+            "args": [
+                "configs/voc12/vpt_seg_zero_vit-b_512x512_20k_12_10.py",
+                "pretrained/voc_inductive_512_vit_base.pth",
+                "--eval=mDice"
+            ],
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "1"
+            },
+            "justMyCode":false
+        },
+    ]
+  }

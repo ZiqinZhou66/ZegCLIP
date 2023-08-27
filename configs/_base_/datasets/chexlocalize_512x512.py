@@ -1,10 +1,20 @@
 # dataset settings
-dataset_type = "ZeroPascalVOCDataset20"
-data_root = "/mnt/Enterprise2/safal/ZegCLIP/data/VOCdevkit/VOC2012"
+dataset_type = "ImageTextMaskDataset"
+
+img_dir = "/mnt/Enterprise/safal/VLM-SEG-2023/CRIS.pytorch/datasets/images/chexlocalize_no_train/"
+ann_dir = "/mnt/Enterprise/safal/VLM-SEG-2023/CRIS.pytorch/datasets/masks/chexlocalize_no_train/"
+
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True
 )
 crop_size = (512, 512)
+
+prompt_type = "p0"
+
+class_names = ["background", "chest_pathology"]
+
+prompt_file = "/mnt/Enterprise/safal/VLM-SEG-2023/CRIS.pytorch/datasets/anns/chexlocalize_no_train/testA.json"
+
 train_pipeline = [
     dict(type="LoadImageFromFile"),
     dict(type="LoadAnnotations", reduce_zero_label=True),
@@ -15,21 +25,22 @@ train_pipeline = [
     dict(type="Normalize", **img_norm_cfg),
     dict(type="Pad", size=crop_size, pad_val=0, seg_pad_val=255),
     dict(type="DefaultFormatBundle"),
-    dict(type="Collect", keys=["img", "gt_semantic_seg"]),
+    dict(type="CustomCollect", keys=["img", "gt_semantic_seg"]),
 ]
 test_pipeline = [
     dict(type="LoadImageFromFile"),
     dict(
         type="MultiScaleFlipAug",
         img_scale=(2048, 512),
-        # img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
         flip=False,
         transforms=[
             dict(type="Resize", keep_ratio=True, min_size=512),
-            dict(type="RandomFlip"),
             dict(type="Normalize", **img_norm_cfg),
             dict(type="ImageToTensor", keys=["img"]),
-            dict(type="Collect", keys=["img"]),
+            dict(
+                type="CustomCollect",
+                keys=["img"],
+            ),
         ],
     ),
 ]
@@ -38,26 +49,29 @@ data = dict(
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
-        data_root=data_root,
-        img_dir="JPEGImages",
-        ann_dir="SegmentationClass",
-        split="ImageSets/Segmentation/train.txt",
+        prompt_type=prompt_type,
+        img_dir=img_dir,
+        ann_dir=ann_dir,
         pipeline=train_pipeline,
+        prompt_file=prompt_file,
+        class_names=class_names,
     ),
     val=dict(
         type=dataset_type,
-        data_root=data_root,
-        img_dir="JPEGImages",
-        ann_dir="SegmentationClass",
-        split="ImageSets/Segmentation/val.txt",
+        prompt_type=prompt_type,
+        img_dir=img_dir,
+        ann_dir=ann_dir,
         pipeline=test_pipeline,
+        prompt_file=prompt_file,
+        class_names=class_names,
     ),
     test=dict(
         type=dataset_type,
-        data_root=data_root,
-        img_dir="JPEGImages",
-        ann_dir="SegmentationClass",
-        split="ImageSets/Segmentation/val.txt",
+        prompt_type=prompt_type,
+        img_dir=img_dir,
+        ann_dir=ann_dir,
         pipeline=test_pipeline,
+        prompt_file=prompt_file,
+        class_names=class_names,
     ),
 )
